@@ -1,0 +1,11 @@
+services:
+  - type: worker
+    name: openclaw-douglas
+    runtime: docker
+    repo: https://github.com/douglaslgsoares1993/openclaw-douglas
+    branch: main
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: OPENCLAW_GATEWAY_TOKEN
+        generateValue: true
+    autoDeploy: true
