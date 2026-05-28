@@ -195,6 +195,8 @@ print('done')
 | - | OpenRouter configurado | ✅ Concluído | 5 modelos free |
 | - | Telegram conectado | ✅ Concluído | @openclawdouglas_bot |
 | - | Fallbacks configurados | ⏳ Em andamento | Aguardando correção schema |
+| - | SOUL.md configurado | ✅ Concluído | Skills adicionadas |
+| - | Skills customizadas criadas | ✅ Concluído | resenha-policial, concurso-delegado |
 | 1 | Base + Auto-evolução | ⏳ Pendente | |
 | 2 | Briefing Matinal | ⏳ Pendente | |
 
@@ -286,5 +288,31 @@ Agente de Polícia - 15ª DESEC/Belo Jardim
 
 ---
 
+---
+
+## 11. SKILLS INSTALADAS
+
+### ClawHub (comunidade)
+- capability-evolver - auto-evolução do agente
+- skill-vetter - autocrítica e aprendizado
+- summarize - resumo de documentos
+- tavily-web-search - pesquisa web em tempo real
+
+### Customizadas (15ª DESEC)
+- resenha-policial - templates de resenha para homicídio, prisão e operação
+- concurso-delegado - coach para prova objetiva, discursiva e oral
+
+### Como instalar nova skill
+```bash
+# Via ClawHub
+clawhub install <nome-skill>
+# Via GitHub
+git clone https://github.com/autor/skill ~/openclaw-douglas/skills/nome-skill
+# Depois reinicia gateway
+openclaw gateway stop && openclaw gateway run --detach
+```
+
+---
+
 *Última atualização: 28/05/2026*
-*Versão do documento: 1.0*
+*Versão do documento: 1.1*
