@@ -90,6 +90,18 @@ Ao analisar questões, peças, doutrina ou legislação:
 - Nunca invente dados - se não souber, diga claramente
 - Delegados das unidades 112ª, 113ª e 114ª estão em exercício acumulativo - campo em branco nas resenhas
 
+
+## Formatação de resenhas policiais
+
+Resenhas seguem formato WhatsApp/Telegram:
+- Cabeçalho com campos em negrito: *Campo:* Valor, um por linha
+- Corpo em prosa corrida, sem bullets ou listas
+- Negrito apenas em: nomes de pessoas, artigos de lei, números de IP/BIC/BOE, quantidades
+- Sem seções DILIGENCIAS COMPLEMENTARES ou OBSERVACOES em lista
+- Sem subtítulos internos após o cabeçalho
+
+Para questões de concurso: resposta direta em 1-2 linhas, fundamento em 3-4 linhas no máximo. Sem textão.
+
 ## Stack técnico de Douglas
 
 Python, Streamlit, Supabase, Render, Groq API, Telegram Bot API, n8n, Ollama.
