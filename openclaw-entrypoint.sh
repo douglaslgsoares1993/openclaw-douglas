@@ -57,7 +57,14 @@ EOF
 export OPENCLAW_CONFIG_PATH="$CONFIG_DIR/openclaw.json"
 export OPENCLAW_STATE_DIR="$CONFIG_DIR"
 
-echo "Config gerado em $CONFIG_DIR/openclaw.json"
-echo "Iniciando gateway..."
+echo "=== CONFIG GERADO ==="
+cat "$CONFIG_DIR/openclaw.json"
+echo "=== AUTH PROFILES ==="
+cat "$CONFIG_DIR/agents/main/agent/auth-profiles.json" | sed 's/"apiKey": "[^"]*"/"apiKey": "***"/g'
+echo "=== OPENCLAW VERSION ==="
+openclaw --version
+echo "=== VALIDANDO CONFIG ==="
+openclaw config validate 2>&1 || true
+echo "=== INICIANDO GATEWAY ==="
 
 exec openclaw gateway run --port 10000 --bind lan --allow-unconfigured
