@@ -23,20 +23,17 @@ cat > "$CONFIG_DIR/openclaw.json" << EOF
   "gateway": {
     "mode": "local",
     "port": 10000,
-    "bind": "lan"
+    "bind": "lan",
+    "auth": {
+      "mode": "token",
+      "token": "${OPENCLAW_GATEWAY_TOKEN}"
+    }
   },
   "channels": {
     "telegram": {
-      "accounts": {
-        "openclaw": {
-          "token": "${TELEGRAM_BOT_TOKEN}",
-          "dmPolicy": "allowlist",
-          "allowFrom": ["5751936175"],
-          "routing": {
-            "agents": ["main"]
-          }
-        }
-      }
+      "botToken": "${TELEGRAM_BOT_TOKEN}",
+      "dmPolicy": "allowlist",
+      "allowFrom": ["5751936175"]
     }
   }
 }
@@ -67,4 +64,4 @@ echo "=== VALIDANDO CONFIG ==="
 openclaw config validate 2>&1 || true
 echo "=== INICIANDO GATEWAY ==="
 
-exec openclaw gateway run --port 10000 --bind lan --allow-unconfigured
+exec openclaw gateway run --port 10000 --bind lan
