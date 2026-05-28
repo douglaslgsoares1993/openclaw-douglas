@@ -1,14 +1,14 @@
 #!/bin/bash
 set -e
 
-# Escreve config do openclaw a partir das env vars
-mkdir -p /root/.openclaw/agents/main/agent
+CONFIG_DIR="/root/.openclaw"
+mkdir -p "$CONFIG_DIR/agents/main/agent" "$CONFIG_DIR/workspace" "$CONFIG_DIR/agents/main/sessions"
 
-cat > /root/.openclaw/openclaw.json << EOF
+cat > "$CONFIG_DIR/openclaw.json" << EOF
 {
   "agents": {
     "defaults": {
-      "workspace": "/root/.openclaw/workspace",
+      "workspace": "$CONFIG_DIR/workspace",
       "model": {
         "primary": "groq/llama-3.3-70b-versatile",
         "fallbacks": [
@@ -23,10 +23,7 @@ cat > /root/.openclaw/openclaw.json << EOF
   "gateway": {
     "mode": "local",
     "port": 10000,
-    "bind": "lan",
-    "auth": {
-      "mode": "token"
-    }
+    "bind": "lan"
   },
   "channels": {
     "telegram": {
@@ -45,7 +42,7 @@ cat > /root/.openclaw/openclaw.json << EOF
 }
 EOF
 
-cat > /root/.openclaw/agents/main/agent/auth-profiles.json << EOF
+cat > "$CONFIG_DIR/agents/main/agent/auth-profiles.json" << EOF
 {
   "version": 1,
   "profiles": {
@@ -57,5 +54,10 @@ cat > /root/.openclaw/agents/main/agent/auth-profiles.json << EOF
 }
 EOF
 
-# Inicia o gateway
-exec openclaw gateway run --port 10000 --bind lan
+export OPENCLAW_CONFIG_PATH="$CONFIG_DIR/openclaw.json"
+export OPENCLAW_STATE_DIR="$CONFIG_DIR"
+
+echo "Config gerado em $CONFIG_DIR/openclaw.json"
+echo "Iniciando gateway..."
+
+exec openclaw gateway run --port 10000 --bind lan --allow-unconfigured
