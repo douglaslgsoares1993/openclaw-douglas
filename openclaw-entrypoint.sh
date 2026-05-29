@@ -14,6 +14,21 @@ DEFAULT_OLLAMA_PRIMARY="ollama/${OLLAMA_MODEL_RESOLVED}"
 FALLBACK_MODEL_RESOLVED="${FALLBACK_MODEL:-$DEFAULT_EXTERNAL_PRIMARY}"
 OLLAMA_API_KEY_RESOLVED="${OLLAMA_API_KEY:-ollama-local}"
 OLLAMA_PROXY_PORT="${OLLAMA_PROXY_PORT:-11434}"
+TELEGRAM_TOKEN_RESOLVED="${TELEGRAM_BOT_TOKEN:-${TELEGRAM_TOKEN:-${BOT_TOKEN:-}}}"
+
+export TELEGRAM_BOT_TOKEN="$TELEGRAM_TOKEN_RESOLVED"
+export TELEGRAM_TOKEN="$TELEGRAM_TOKEN_RESOLVED"
+export BOT_TOKEN="$TELEGRAM_TOKEN_RESOLVED"
+
+TELEGRAM_TOKEN_LENGTH=${#TELEGRAM_TOKEN_RESOLVED}
+TELEGRAM_TOKEN_PREFIX=""
+TELEGRAM_TOKEN_HAS_COLON="nao"
+if [ -n "$TELEGRAM_TOKEN_RESOLVED" ]; then
+  TELEGRAM_TOKEN_PREFIX="${TELEGRAM_TOKEN_RESOLVED:0:5}"
+  if [[ "$TELEGRAM_TOKEN_RESOLVED" == *:* ]]; then
+    TELEGRAM_TOKEN_HAS_COLON="sim"
+  fi
+fi
 
 build_fallbacks() {
   if [ "$FALLBACK_MODEL_RESOLVED" = "$PRIMARY_MODEL_RESOLVED" ]; then
@@ -96,7 +111,7 @@ cat > "$CONFIG_DIR/openclaw.json" << EOF
   },
   "channels": {
     "telegram": {
-      "botToken": "${TELEGRAM_BOT_TOKEN}",
+      "botToken": "${TELEGRAM_TOKEN_RESOLVED}",
       "dmPolicy": "allowlist",
       "allowFrom": ["5751936175"]
     }
@@ -121,9 +136,52 @@ export OPENCLAW_CONFIG_PATH="$CONFIG_DIR/openclaw.json"
 export OPENCLAW_STATE_DIR="$CONFIG_DIR"
 
 echo "=== CONFIG GERADO ==="
-cat "$CONFIG_DIR/openclaw.json"
+node -e 'const fs=require("fs"); const p=process.env.OPENCLAW_CONFIG_PATH; const c=JSON.parse(fs.readFileSync(p,"utf8")); if(c.channels?.telegram?.botToken){c.channels.telegram.botToken="***";} console.log(JSON.stringify(c,null,2));'
 echo "=== MODELO FINAL DO AGENTE ==="
 node -e 'const fs=require("fs"); const c=JSON.parse(fs.readFileSync(process.env.OPENCLAW_CONFIG_PATH,"utf8")); console.log(JSON.stringify(c.agents.defaults.model,null,2));'
+echo "=== TELEGRAM DIAGNOSTICO SEGURO ==="
+if [ -n "$TELEGRAM_TOKEN_RESOLVED" ]; then
+  echo "TELEGRAM_TOKEN_PRESENTE=sim"
+else
+  echo "TELEGRAM_TOKEN_PRESENTE=nao"
+fi
+echo "TELEGRAM_TOKEN_LENGTH=${TELEGRAM_TOKEN_LENGTH}"
+echo "TELEGRAM_TOKEN_PREFIX=${TELEGRAM_TOKEN_PREFIX}"
+echo "TELEGRAM_TOKEN_HAS_COLON=${TELEGRAM_TOKEN_HAS_COLON}"
+echo "=== TELEGRAM PREFLIGHT getMe ==="
+node <<'NODE'
+const token = process.env.TELEGRAM_BOT_TOKEN || "";
+if (!token) {
+  console.log("TELEGRAM getMe FALHOU");
+  console.log("status code: token ausente");
+  console.log("descricao: configure TELEGRAM_BOT_TOKEN, TELEGRAM_TOKEN ou BOT_TOKEN no Render");
+  process.exit(0);
+}
+
+try {
+  const response = await fetch(`https://api.telegram.org/bot${token}/getMe`);
+  const text = await response.text();
+  let data = null;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = { description: text.slice(0, 300) };
+  }
+
+  if (response.ok && data?.ok === true) {
+    console.log("TELEGRAM getMe OK");
+    console.log(`username: ${data.result?.username || "nao informado"}`);
+  } else {
+    console.log("TELEGRAM getMe FALHOU");
+    console.log(`status code: ${response.status}`);
+    console.log(`descricao: ${data?.description || "sem descricao"}`);
+  }
+} catch (error) {
+  console.log("TELEGRAM getMe FALHOU");
+  console.log("status code: erro de conexao");
+  console.log(`descricao: ${error.message}`);
+}
+NODE
 echo "=== AUTH PROFILES ==="
 cat "$CONFIG_DIR/agents/main/agent/auth-profiles.json" | sed 's/"apiKey": "[^"]*"/"apiKey": "***"/g'
 if [ -n "$OLLAMA_BASE_URL" ]; then

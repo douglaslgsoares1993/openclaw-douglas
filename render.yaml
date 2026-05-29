@@ -8,6 +8,8 @@ services:
     envVars:
       - key: OPENCLAW_GATEWAY_TOKEN
         generateValue: true
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
       - key: OLLAMA_BASE_URL
         sync: false
       - key: OLLAMA_MODEL
