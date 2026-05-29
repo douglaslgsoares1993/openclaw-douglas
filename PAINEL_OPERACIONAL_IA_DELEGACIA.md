@@ -76,3 +76,43 @@ bash tools/wsl-setup/verificar_wsl.sh
 - Render executa OpenClaw 24h.
 - Telegram e canal operacional do bot.
 - Groq/OpenRouter permanecem como fallback externo.
+
+## Modo casa
+
+- Acessar o PC da Delegacia pelo Chrome Remote Desktop.
+- Conferir se Ollama e cloudflared continuam ativos.
+- Testar `https://don-pike-suggestions-reveals.trycloudflare.com/api/tags`.
+- Usar `tools/notebook-client` para acesso direto ao Ollama, sem depender do Render.
+- Se a URL cair, recriar o quick tunnel com `tools/casa-remoto/recuperar_tunnel_quick.ps1`.
+
+## Acesso remoto via Chrome Remote Desktop
+
+Chrome Remote Desktop e o caminho administrativo para mexer no PC sem presenca fisica. Nao e canal de uso por colegas nem substitui uma interface web protegida.
+
+## Uso direto sem Render
+
+Com Render suspenso, o fluxo direto fica:
+
+```text
+Notebook de casa -> quick tunnel -> Ollama Windows -> qwen2.5:14b
+```
+
+## Open WebUI futuro
+
+Preparado em `tools/open-webui-local`. Deve iniciar localmente em `http://localhost:3000` e conectar no Ollama por `host.docker.internal:11434`.
+
+## Memoria/RAG
+
+Documentacao inicial em `docs/memoria-e-rag`. O modelo nao aprende sozinho; memoria vem de historico, perfis, RAG e banco local controlado.
+
+## Uso por colegas
+
+Documentacao inicial em `docs/uso-por-colegas`. Comecar por uso administrativo, com politica clara, revisao humana e sem dados sigilosos.
+
+## Pendencias criticas
+
+1. Tunnel definitivo.
+2. URL fixa.
+3. Cloudflare Access.
+4. Hospedagem estavel para bot.
+5. Politica de dados.
