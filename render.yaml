@@ -8,4 +8,12 @@ services:
     envVars:
       - key: OPENCLAW_GATEWAY_TOKEN
         generateValue: true
+      - key: OLLAMA_BASE_URL
+        sync: false
+      - key: OLLAMA_MODEL
+        value: qwen2.5:14b
+      - key: PRIMARY_MODEL
+        value: ollama/qwen2.5:14b
+      - key: FALLBACK_MODEL
+        value: groq/llama-3.3-70b-versatile
     autoDeploy: true

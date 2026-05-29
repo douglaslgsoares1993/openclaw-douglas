@@ -9,7 +9,7 @@
 
 ## Modelos recomendados
 Com RTX A4000 (16GB VRAM) você roda:
-- qwen2.5:32b → relatórios, resenhas, peças jurídicas (melhor para português)
+- qwen2.5:14b -> relatorios, resenhas, pecas juridicas e redacao institucional
 - llama3.1:8b → tarefas rápidas, triagem, classificação
 - mistral:7b → ultrarrápido para respostas simples
 - nomic-embed-text → memória vetorial do OpenClaw
@@ -21,12 +21,12 @@ Instalar normalmente. Verificar: abrir CMD → `ollama --version`
 ## Passo 2 - Baixar modelos
 Abrir CMD como Administrador:
 ```cmd
-ollama pull qwen2.5:32b
+ollama pull qwen2.5:14b
 ollama pull llama3.1:8b
 ollama pull mistral:7b
 ollama pull nomic-embed-text
 ```
-Nota: qwen2.5:32b tem ~20GB. Deixar baixando com internet boa.
+Nota: qwen2.5:14b e o modelo principal desta fase, adequado para a GPU local disponivel.
 
 ## Passo 3 - Configurar Ollama para aceitar conexões externas
 Criar variável de ambiente do Windows:
@@ -55,6 +55,9 @@ cloudflared tunnel --url http://localhost:11434
 4. Copiar a URL gerada (ex: https://abc123.trycloudflare.com)
 5. No Render → openclaw-douglas → Environment → Add:
    OLLAMA_BASE_URL = https://abc123.trycloudflare.com
+   OLLAMA_MODEL = qwen2.5:14b
+   PRIMARY_MODEL = ollama/qwen2.5:14b
+   FALLBACK_MODEL = groq/llama-3.3-70b-versatile
 
 ## Passo 6 - Instalar cloudflared como serviço Windows
 ```cmd
@@ -68,5 +71,7 @@ curl http://localhost:11434/api/tags
 Deve retornar JSON com modelos instalados.
 
 ## Após configurar
-Avisar Douglas para adicionar OLLAMA_BASE_URL no Render.
+Avisar Douglas para adicionar `OLLAMA_BASE_URL` no Render. `OLLAMA_MODEL` e opcional; se nao for definido, o bot usa `qwen2.5:14b`.
+
+Nao usar URL com `/v1`. O OpenClaw deve falar com a API nativa do Ollama. O container usa `/api/chat` e tenta `/api/generate` como fallback de compatibilidade.
 O OpenClaw vai usar automaticamente o Ollama como provedor primário.

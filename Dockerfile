@@ -23,6 +23,7 @@ RUN mkdir -p /root/.openclaw/workspace \
 COPY workspace/ /root/.openclaw/workspace/
 COPY agent/ /root/.openclaw/agents/main/agent/
 COPY openclaw-entrypoint.sh /app/entrypoint.sh
+COPY ollama-proxy.js /app/ollama-proxy.js
 RUN chmod +x /app/entrypoint.sh
 
 COPY skills/ /root/.openclaw/skills/

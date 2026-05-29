@@ -43,13 +43,13 @@ groq/llama-3.3-70b-versatile
 ### Cascata de fallbacks (em ordem de prioridade)
 | Ordem | Modelo | Provedor | Limite gratuito |
 |---|---|---|---|
-| 0º (primário futuro) | `ollama/qwen2.5:32b` | Ollama local (HP Z2 G9 - Delegacia) | Ilimitado - sem custo |
+| 0º (primário quando `OLLAMA_BASE_URL` existir) | `ollama/qwen2.5:14b` | Ollama local (PC Delegacia) | Ilimitado - sem custo |
 | 1º | `groq/llama-3.1-8b-instant` | Groq | ~1.400 req/dia |
 | 2º | `google/gemini-2.5-flash` | Google AI Studio | 1.500 req/dia |
 | 3º | `openrouter/deepseek/deepseek-v4-flash:free` | OpenRouter | 50 req/dia (sem créditos) |
 | 4º | `openrouter/meta-llama/llama-3.3-70b-instruct:free` | OpenRouter | 50 req/dia (sem créditos) |
 
-> Nota (29/05/2026): `cerebras/qwen-3-235b-a22b-instruct-2507` removido da cascata - chave atual retorna HTTP 401 "Wrong API Key". Reativar após corrigir `CEREBRAS_API_KEY`. Ollama (0º) entra só quando `OLLAMA_BASE_URL` estiver definida no Render.
+> Nota (29/05/2026): `cerebras/qwen-3-235b-a22b-instruct-2507` removido da cascata - chave atual retorna HTTP 401 "Wrong API Key". Reativar após corrigir `CEREBRAS_API_KEY`. Ollama (0º) entra só quando `OLLAMA_BASE_URL` estiver definida no Render. O modelo pode ser ajustado por `OLLAMA_MODEL`; padrão: `qwen2.5:14b`.
 
 ### Modelos adicionais configurados (disponíveis no /model picker)
 - `google/gemini-2.5-pro`
@@ -325,7 +325,7 @@ Internet: privada (não institucional PCPE)
 Guia de instalação: docs/SETUP_OLLAMA_DELEGACIA.md
 
 Modelos planejados:
-- qwen2.5:32b (relatórios e resenhas)
+- qwen2.5:14b (relatórios e resenhas)
 - llama3.1:8b (tarefas rápidas)
 - mistral:7b (triagem)
 - nomic-embed-text (memória vetorial)

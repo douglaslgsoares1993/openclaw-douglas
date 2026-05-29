@@ -36,8 +36,9 @@ O OpenClaw no Render se conecta ao Ollama da delegacia via Cloudflare Tunnel:
 1. PC Delegacia roda `cloudflared tunnel --url http://localhost:11434`
 2. Cloudflare gera URL pública segura (ex: https://abc123.trycloudflare.com)
 3. Essa URL é adicionada no Render como `OLLAMA_BASE_URL`
-4. OpenClaw usa Ollama como provedor primário automaticamente
-5. Se Ollama cair, cai para Groq → Gemini → OpenRouter
+4. Opcionalmente, o modelo é definido no Render com `OLLAMA_MODEL`
+5. OpenClaw usa Ollama como provedor primário automaticamente
+6. Se Ollama cair, cai para Groq → Gemini → OpenRouter
 
 ## Passos para ativar (quando qwen2.5:14b terminar de baixar)
 
@@ -51,12 +52,26 @@ O OpenClaw no Render se conecta ao Ollama da delegacia via Cloudflare Tunnel:
 
 3. Copiar a URL gerada
 
-4. No Render - adicionar env var:
+4. No Render - adicionar env vars:
    OLLAMA_BASE_URL = https://xxxxx.trycloudflare.com
+   OLLAMA_MODEL = qwen2.5:14b
+   PRIMARY_MODEL = ollama/qwen2.5:14b
+   FALLBACK_MODEL = groq/llama-3.3-70b-versatile
 
 5. Fazer redeploy no Render
 
 6. Testar: mandar mensagem para @openclawdouglas_bot
+
+## Variáveis Render
+
+| Variável | Obrigatória | Padrão | Função |
+| --- | --- | --- | --- |
+| `OLLAMA_BASE_URL` | Sim, para ativar Ollama | - | URL base do Ollama exposto pelo Cloudflare Tunnel, sem `/v1` e sem caminho adicional |
+| `OLLAMA_MODEL` | Não | `qwen2.5:14b` | Modelo local usado como primário pelo OpenClaw |
+| `PRIMARY_MODEL` | Não | `ollama/qwen2.5:14b` quando Ollama está ativo | Modelo preferencial do bot |
+| `FALLBACK_MODEL` | Não | `groq/llama-3.3-70b-versatile` | Primeiro fallback se Ollama falhar |
+
+Quando `OLLAMA_BASE_URL` está definida, o container sobe um proxy interno em `127.0.0.1:11434`. O OpenClaw usa a API nativa `/api/chat`; se essa chamada falhar, o proxy tenta `/api/generate` antes de devolver erro. Se o provedor Ollama falhar mesmo assim, a cascata do OpenClaw continua para Groq, Gemini e OpenRouter.
 
 ## Segurança
 
