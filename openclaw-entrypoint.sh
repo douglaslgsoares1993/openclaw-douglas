@@ -4,6 +4,20 @@ set -e
 CONFIG_DIR="/root/.openclaw"
 mkdir -p "$CONFIG_DIR/agents/main/agent" "$CONFIG_DIR/workspace" "$CONFIG_DIR/agents/main/sessions"
 
+# Monta a cascata de fallbacks dinamicamente.
+# cerebras removido: chave atual retorna HTTP 401 "Wrong API Key".
+FALLBACKS='"groq/llama-3.1-8b-instant",
+          "google/gemini-2.5-flash",
+          "openrouter/deepseek/deepseek-v4-flash:free",
+          "openrouter/meta-llama/llama-3.3-70b-instruct:free"'
+
+# Se OLLAMA_BASE_URL estiver definida, Ollama local entra como PRIMEIRO fallback.
+if [ -n "$OLLAMA_BASE_URL" ]; then
+  echo "OLLAMA_BASE_URL detectada ($OLLAMA_BASE_URL) - ollama/qwen2.5:32b adicionado como primeiro fallback"
+  FALLBACKS='"ollama/qwen2.5:32b",
+          '"$FALLBACKS"
+fi
+
 cat > "$CONFIG_DIR/openclaw.json" << EOF
 {
   "agents": {
@@ -12,10 +26,7 @@ cat > "$CONFIG_DIR/openclaw.json" << EOF
       "model": {
         "primary": "groq/llama-3.3-70b-versatile",
         "fallbacks": [
-          "cerebras/qwen-3-235b-a22b-instruct-2507",
-          "google/gemini-2.5-flash",
-          "openrouter/deepseek/deepseek-v4-flash:free",
-          "openrouter/meta-llama/llama-3.3-70b-instruct:free"
+          $FALLBACKS
         ]
       }
     }

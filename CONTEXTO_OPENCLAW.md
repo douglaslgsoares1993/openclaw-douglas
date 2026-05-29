@@ -43,11 +43,13 @@ groq/llama-3.3-70b-versatile
 ### Cascata de fallbacks (em ordem de prioridade)
 | Ordem | Modelo | Provedor | Limite gratuito |
 |---|---|---|---|
-| 1º | `groq/llama-3.3-70b-versatile` | Groq | ~1.400 req/dia |
-| 2º | `cerebras/qwen-3-235b-a22b-instruct-2507` | Cerebras | 1M tokens/dia |
-| 3º | `google/gemini-2.5-flash` | Google AI Studio | 1.500 req/dia |
-| 4º | `openrouter/deepseek/deepseek-v4-flash:free` | OpenRouter | 50 req/dia (sem créditos) |
-| 5º | `openrouter/meta-llama/llama-3.3-70b-instruct:free` | OpenRouter | 50 req/dia (sem créditos) |
+| 0º (primário futuro) | `ollama/qwen2.5:32b` | Ollama local (HP Z2 G9 - Delegacia) | Ilimitado - sem custo |
+| 1º | `groq/llama-3.1-8b-instant` | Groq | ~1.400 req/dia |
+| 2º | `google/gemini-2.5-flash` | Google AI Studio | 1.500 req/dia |
+| 3º | `openrouter/deepseek/deepseek-v4-flash:free` | OpenRouter | 50 req/dia (sem créditos) |
+| 4º | `openrouter/meta-llama/llama-3.3-70b-instruct:free` | OpenRouter | 50 req/dia (sem créditos) |
+
+> Nota (29/05/2026): `cerebras/qwen-3-235b-a22b-instruct-2507` removido da cascata - chave atual retorna HTTP 401 "Wrong API Key". Reativar após corrigir `CEREBRAS_API_KEY`. Ollama (0º) entra só quando `OLLAMA_BASE_URL` estiver definida no Render.
 
 ### Modelos adicionais configurados (disponíveis no /model picker)
 - `google/gemini-2.5-pro`
@@ -198,7 +200,7 @@ print('done')
 | - | SOUL.md configurado | ✅ Concluído | Skills adicionadas |
 | - | Skills customizadas criadas | ✅ Concluído | resenha-policial, concurso-delegado |
 | 1 | Base + Auto-evolução | ⏳ Pendente | |
-| 2 | Briefing Matinal | ⏳ Pendente | |
+| 2 | Briefing Matinal | ✅ Concluído | skill briefing-matinal criada | |
 
 ### FASE 1 - Comunicação
 | # | Agente | Status |
@@ -220,7 +222,7 @@ print('done')
 ### FASE 3 - Concurso
 | # | Agente | Status |
 |---|---|---|
-| 5 | Monitor de Concursos | ⏳ Pendente |
+| 5 | Monitor de Concursos | ✅ Concluído |
 | 6 | Coach Objetiva CESPE | ⏳ Pendente |
 | 7 | Coach Peças Discursivas | ⏳ Pendente |
 | 8 | Coach Oral | ⏳ Pendente |
@@ -314,5 +316,23 @@ openclaw gateway stop && openclaw gateway run --detach
 
 ---
 
+## 12. SERVIDOR LOCAL - HP Z2 G9 (DELEGACIA)
+
+Status: Pendente instalação
+Máquina: HP Z2 G9 Tower - i9 12ª gen, 32GB DDR5, RTX A4000 16GB VRAM
+Localização: 15ª DESEC - Belo Jardim/PE
+Internet: privada (não institucional PCPE)
+Guia de instalação: docs/SETUP_OLLAMA_DELEGACIA.md
+
+Modelos planejados:
+- qwen2.5:32b (relatórios e resenhas)
+- llama3.1:8b (tarefas rápidas)
+- mistral:7b (triagem)
+- nomic-embed-text (memória vetorial)
+
+Exposição: Cloudflare Tunnel → OLLAMA_BASE_URL no Render
+
+---
+
 *Última atualização: 28/05/2026*
-*Versão do documento: 1.1*
+*Versão do documento: 1.2*
