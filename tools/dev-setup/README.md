@@ -15,9 +15,10 @@ Este kit prepara e diagnostica o ambiente de desenvolvimento Windows para IA_DEL
 2. Ler o relatorio gerado.
 3. Corrigir Python aliases, se necessario.
 4. Rodar a instalacao assistida apenas para grupos realmente necessarios.
-5. Fechar e reabrir terminal.
-6. Rodar o diagnostico novamente.
-7. Testar OpenClaw/Ollama.
+5. Preparar WSL2 Ubuntu com `tools/wsl-setup/setup_wsl_ubuntu.sh`, se o desenvolvimento tambem ocorrer no Linux.
+6. Fechar e reabrir terminal.
+7. Rodar o diagnostico novamente.
+8. Testar OpenClaw/Ollama.
 
 ## Rodar diagnostico
 
@@ -74,3 +75,10 @@ ollama list
 ```
 
 Se o PC estiver rodando Ollama local, valide tambem a resposta via OpenClaw/Telegram somente depois de confirmar que o servico de producao no Render esta estavel.
+
+## Kits relacionados
+
+- `tools/wsl-setup`: preparo e diagnostico do Ubuntu no WSL2.
+- `tools/notebook-client`: cliente simples para testar Ollama local/remoto.
+- `tools/final-expediente`: checklist operacional antes de sair.
+- `docs/cloudflare-tunnel-definitivo`: plano de migracao do quick tunnel temporario para tunnel definitivo.
