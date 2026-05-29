@@ -39,9 +39,10 @@ Quando `OLLAMA_BASE_URL` existe:
 
 1. O entrypoint seleciona `PRIMARY_MODEL=ollama/qwen2.5:14b`, salvo se a variavel for sobrescrita.
 2. O container sobe um proxy interno em `127.0.0.1:11434`.
-3. O OpenClaw chama o provedor `ollama` usando `/api/chat`.
+3. O OpenClaw chama o provedor `ollama` usando a API nativa do Ollama, sem `/v1`.
 4. Se `/api/chat` falhar, o proxy tenta `/api/generate`.
-5. Se o Ollama ainda falhar, a cascata do OpenClaw segue para Groq, Gemini e OpenRouter.
+5. Se o Ollama ainda falhar, o fallback principal do agente e `groq/llama-3.3-70b-versatile`.
+6. O entrypoint remove `OLLAMA_BASE_URL` do ambiente antes de iniciar o OpenClaw, para evitar auto-configuracao interna com modelo padrao incorreto.
 
 Logs esperados no Render:
 
@@ -49,8 +50,16 @@ Logs esperados no Render:
 OLLAMA LOCAL HABILITADO
 OLLAMA_BASE_URL configurado no Render
 OLLAMA_MODEL selecionado: qwen2.5:14b
-PRIMARY_MODEL selecionado: ollama/qwen2.5:14b
-FALLBACK_MODEL disponivel: groq/llama-3.3-70b-versatile
+PRIMARY_MODEL final: ollama/qwen2.5:14b
+FALLBACK_MODEL final: groq/llama-3.3-70b-versatile
+MODELO FINAL DO AGENTE
+{
+  "primary": "ollama/qwen2.5:14b",
+  "fallbacks": [
+    "groq/llama-3.3-70b-versatile"
+  ]
+}
+OLLAMA_BASE_URL removido do ambiente do OpenClaw
 ```
 
 ## Como testar no Telegram

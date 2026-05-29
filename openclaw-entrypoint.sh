@@ -7,10 +7,6 @@ mkdir -p "$CONFIG_DIR/agents/main/agent" "$CONFIG_DIR/workspace" "$CONFIG_DIR/ag
 # Monta a cascata de modelos dinamicamente.
 # cerebras removido: chave atual retorna HTTP 401 "Wrong API Key".
 DEFAULT_EXTERNAL_PRIMARY="groq/llama-3.3-70b-versatile"
-EXTERNAL_FALLBACKS='"groq/llama-3.1-8b-instant",
-          "google/gemini-2.5-flash",
-          "openrouter/deepseek/deepseek-v4-flash:free",
-          "openrouter/meta-llama/llama-3.3-70b-instruct:free"'
 
 MODELS_CONFIG=""
 OLLAMA_MODEL_RESOLVED="${OLLAMA_MODEL:-qwen2.5:14b}"
@@ -21,10 +17,9 @@ OLLAMA_PROXY_PORT="${OLLAMA_PROXY_PORT:-11434}"
 
 build_fallbacks() {
   if [ "$FALLBACK_MODEL_RESOLVED" = "$PRIMARY_MODEL_RESOLVED" ]; then
-    FALLBACKS="$EXTERNAL_FALLBACKS"
+    FALLBACKS=""
   else
-    FALLBACKS='"'"$FALLBACK_MODEL_RESOLVED"'",
-          '"$EXTERNAL_FALLBACKS"
+    FALLBACKS='"'"$FALLBACK_MODEL_RESOLVED"'"'
   fi
 }
 
@@ -38,8 +33,8 @@ if [ -n "$OLLAMA_BASE_URL" ]; then
   echo "=== OLLAMA LOCAL HABILITADO ==="
   echo "OLLAMA_BASE_URL configurado no Render"
   echo "OLLAMA_MODEL selecionado: ${OLLAMA_MODEL_RESOLVED}"
-  echo "PRIMARY_MODEL selecionado: ${PRIMARY_MODEL_RESOLVED}"
-  echo "FALLBACK_MODEL disponivel: ${FALLBACK_MODEL_RESOLVED}"
+  echo "PRIMARY_MODEL final: ${PRIMARY_MODEL_RESOLVED}"
+  echo "FALLBACK_MODEL final: ${FALLBACK_MODEL_RESOLVED}"
   echo "Proxy Ollama interno: ${OPENCLAW_OLLAMA_BASE_URL}"
   echo "Fallback se Ollama falhar: ${FALLBACK_MODEL_RESOLVED} -> demais provedores configurados"
 
@@ -73,8 +68,8 @@ else
   fi
   build_fallbacks
   echo "OLLAMA_BASE_URL nao definida - usando provedores atuais"
-  echo "PRIMARY_MODEL selecionado: ${PRIMARY_MODEL_RESOLVED}"
-  echo "FALLBACK_MODEL disponivel: ${FALLBACK_MODEL_RESOLVED}"
+  echo "PRIMARY_MODEL final: ${PRIMARY_MODEL_RESOLVED}"
+  echo "FALLBACK_MODEL final: ${FALLBACK_MODEL_RESOLVED}"
 fi
 
 cat > "$CONFIG_DIR/openclaw.json" << EOF
@@ -127,6 +122,8 @@ export OPENCLAW_STATE_DIR="$CONFIG_DIR"
 
 echo "=== CONFIG GERADO ==="
 cat "$CONFIG_DIR/openclaw.json"
+echo "=== MODELO FINAL DO AGENTE ==="
+node -e 'const fs=require("fs"); const c=JSON.parse(fs.readFileSync(process.env.OPENCLAW_CONFIG_PATH,"utf8")); console.log(JSON.stringify(c.agents.defaults.model,null,2));'
 echo "=== AUTH PROFILES ==="
 cat "$CONFIG_DIR/agents/main/agent/auth-profiles.json" | sed 's/"apiKey": "[^"]*"/"apiKey": "***"/g'
 if [ -n "$OLLAMA_BASE_URL" ]; then
@@ -144,6 +141,8 @@ if [ -n "$OLLAMA_BASE_URL" ]; then
   else
     echo "Erro de conexao com Ollama - fallback do OpenClaw sera acionado em runtime se o modelo primario falhar"
   fi
+  echo "OLLAMA_BASE_URL removido do ambiente do OpenClaw para evitar auto-configuracao interna com modelo padrao incorreto"
+  unset OLLAMA_BASE_URL
 fi
 echo "=== OPENCLAW VERSION ==="
 openclaw --version
